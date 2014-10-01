@@ -14,7 +14,7 @@ import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.awt.Rectangle;
 
-public class Barra {
+public class Proyectil {
 
     private int iX;     //posicion en x.       
     private int iY;     //posicion en y.
@@ -32,11 +32,11 @@ public class Barra {
      * @param imaImagen es la <code>imagen</code> del objeto.
      * 
      */
-    public Barra(int iX, int iY, Animacion aniAnimacion) {
+    public Proyectil(int iX, int iY, Animacion aniAnimacion) {
         this.iX = iX;
         this.iY = iY;
         this.aniAnimacion = aniAnimacion;
-        this.iVelocidad = 3;   // default 3 en velocidad
+        this.iVelocidad = 4;   // default 4 en velocidad
     }
     
     /**
@@ -160,6 +160,26 @@ public class Barra {
     }
     
     /**
+     * arriba
+     * 
+     * Metodo que sube al personaje de acuerdo a la velocidad
+     * 
+     */
+    public void arriba() {
+        this.setY(this.getY() - iVelocidad);
+    }
+    
+    /**
+     * abajo
+     * 
+     * Metodo que baja al personaje de acuerdo a la velocidad
+     * 
+     */
+    public void abajo() {
+        this.setY(this.getY() + iVelocidad);
+    }
+    
+    /**
      * derecha
      * 
      * Metodo que mueve a la derecha al personaje de acuerdo a la velocidad
@@ -182,34 +202,8 @@ public class Barra {
     /** 
      * colisiona
      * 
-     * Metodo para revisar si un objeto <code>Barra</code> colisiona con un
-     * objeto de la clase <code>Proyectil</code>, esto se logra con un objeto
-     * temporal de la clase <code>Rectangle</code>.
-     * 
-     * @param proObjeto es el objeto <code>Proyectil</code> con el que se
-     * compara.
-     * @return un valor true si esta colisionando y false si no.
-     * 
-     */
-    public boolean colisiona(Proyectil proObjeto) {
-        // Creo un objeto rectangulo a partir de este objeto Barra.
-        Rectangle recObjeto = new Rectangle(this.getX(),this.getY(),
-                this.getAncho(), this.getAlto());
-        
-        // Creo un objeto rectangulo a partir del objeto Proyectil parametro.
-        Rectangle recParametro = new Rectangle(proObjeto.getX(),
-                proObjeto.getY(), proObjeto.getAncho(),
-                proObjeto.getAlto());
-        
-        // Si se colisionan regreso verdadero, si no regreso falso.
-        return recObjeto.intersects(recParametro);
-    }
-    
-    /** 
-     * colisiona
-     * 
-     * Metodo para revisar si un objeto <code>Barra</code> colisiona con una
-     * coordenada que tiene valor de x y valor de y.
+     * Metodo para revisar si un objeto <code>Personaje</code> colisiona con una
+     * coordenada que tiene valor de x y valor de y
      * 
      * @param iX es el valor <code>entero</code> de x
      * @param iY es el valor <code>entero</code> de x

@@ -24,11 +24,16 @@ import javax.swing.JOptionPane;
 
 public class JFrameJuego extends JFrame implements Runnable, KeyListener {
     
-    private Barra barBarra;  // Barra de juego que golpeara proyectil.
+    private Barra barBarra;  // Barra de juego que golpeara el proyectil.
+    private Proyectil proPelota;  // Pelota que se movera por la ventana.
     private boolean bPausado;  // Variable que indica si el juego esta pausado.
     /* Variable que indica la direccion de la barra
      * (false-izquierda, true-derecha). */
     private boolean bDireccionBarra;
+    /* Variable que indica la direccion de la pelota
+     * (1-arriba/derecha, 2-arriba/izquierda, 3-abajo/izquierda,
+     * 4-abajo/derecha). */
+    private int iDireccionPelota;
     // Variable para controlar el movimiento de la barra.
     private boolean bMovimientoBarra;
     
@@ -71,6 +76,9 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
      * 
      */
     public void init() {
+        // La direccion inicial de la pelota es hacia arriba/derecha.
+        iDireccionPelota = 1;
+        
         // La direccion inicial de la barra es hacia la derecha.
         bDireccionBarra = true;
         
@@ -99,8 +107,24 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         // Se posiciona a la barra en el centro horizontalmente.
         barBarra.setX(getWidth() / 2 - barBarra.getAncho() / 2);
         
-        /* se le añade la opcion al applet de ser escuchado por los eventos
-           del teclado  */
+         // Se cargan las imágenes(cuadros) para la animacion de la pelota.
+        Image imaPelota = Toolkit.getDefaultToolkit().
+                getImage(this.getClass().getResource("Proyectil.png"));
+        
+        /* Se inicializa la variable de animacion con la animacion de la pelota
+         * y se introducen las imagenes como parte de ella */
+        aniAnimacionTemporal = new Animacion();
+        aniAnimacionTemporal.sumaCuadro(imaPelota, 100);
+        
+        // Se inicializa objeto de pelota encima de barra.
+        proPelota = new Proyectil(0, 549 - barBarra.getAlto(),
+                aniAnimacionTemporal);
+         
+        // Se posiciona a la pelota en el centro horizontalmente.
+        proPelota.setX(getWidth() / 2 - proPelota.getAncho() / 2);
+        
+        /* Se le añade la opcion al applet de ser escuchado por los eventos
+           del teclado.  */
 	addKeyListener(this);
     }
 	
@@ -180,6 +204,34 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
                 barBarra.izquierda();  // La barra se mueve a la izquierda.
             }
         }
+        
+        // Se revisa la direccion de la pelota.
+        switch(iDireccionPelota) {
+            // Si la direccion es arriba/derecha.
+            case 1: {
+                proPelota.arriba();  // La pelota se mueve arriba.
+                proPelota.derecha();  // La pelota se mueve a la derecha.
+                break;
+            }
+            // Si la direccion es arriba/izquierda.
+            case 2: {
+                proPelota.arriba();  // La pelota se mueve arriba.
+                proPelota.izquierda();  // La pelota se mueve a la izquierda.
+                break;
+            }
+            // Si la direccion es abajo/izquierda.
+            case 3: {
+                proPelota.abajo();  // La pelota se mueve abajo.
+                proPelota.izquierda();  // La pelota se mueve a la izquierda.
+                break;
+            }
+            // Si la direccion es abajo/derecha.
+            case 4: {
+                proPelota.abajo();  // La pelota se mueve abajo.
+                proPelota.derecha();  // La pelota se mueve a la derecha.
+                break;
+            }
+        }
     }
 	
     /**
@@ -212,6 +264,76 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         // Si no esta chocando.
         else {
             barBarra.setVelocidad(3);  // Nena se mueve con velocidad 3.
+        }
+        
+        // Se revisa si la pelota esta chocando con los bordes del JFrame.
+        // Si esta chocando con el borde inferior.
+        if(proPelota.colisiona(proPelota.getX(), getHeight())) {
+            // Se reinician posiciones de barra y pelota.
+            barBarra.setX(getWidth() / 2 - barBarra.getAncho() / 2);
+            barBarra.setY(550);
+            proPelota.setX(getWidth() / 2 - proPelota.getAncho() / 2);
+            proPelota.setY(550 - barBarra.getAlto());
+            
+            // Se reinicia direccion de pelota hacia arriba/derecha.
+            iDireccionPelota = 1;
+        }
+        /* Si esta chocando con el borde derecho y su direccion es
+         * arriba/derecha. */
+        else if(proPelota.colisiona(getWidth(), proPelota.getY()) &&
+                iDireccionPelota == 1) {
+            // Se cambia la direccion de la barra hacia arriba/izquierda.
+            iDireccionPelota = 2;
+        }
+        /* Si esta chocando con el borde derecho y su direccion es
+         * abajo/derecha. */
+        else if(proPelota.colisiona(getWidth(), proPelota.getY()) &&
+                iDireccionPelota == 4) {
+            // Se cambia la direccion de la barra hacia abajo/izquierda.
+            iDireccionPelota = 3;
+        }
+        /* Si esta chocando con el borde izquierdo y su direccion es
+         * arriba/izquierda. */
+        else if(proPelota.colisiona(0, proPelota.getY()) &&
+                iDireccionPelota == 2) {
+            // Se cambia la direccion de la barra hacia arriba/derecha.
+            iDireccionPelota = 1;
+        }
+        /* Si esta chocando con el borde izquierdo y su direccion es
+         * abajo/izquierda. */
+        else if(proPelota.colisiona(0, proPelota.getY()) &&
+                iDireccionPelota == 3) {
+            // Se cambia la direccion de la barra hacia abajo/derecha.
+            iDireccionPelota = 4;
+        }
+        /* Si esta chocando con el borde superior y su direccion es
+         * arriba/izquierda. */
+        else if(proPelota.colisiona(proPelota.getX(), 25) &&
+                iDireccionPelota == 2) {
+            // Se cambia la direccion de la barra hacia abajo/izquierda.
+            iDireccionPelota = 3;
+        }
+        /* Si esta chocando con el borde superior y su direccion es
+         * arriba/derecha. */
+        else if(proPelota.colisiona(proPelota.getX(), 25) &&
+                iDireccionPelota == 1) {
+            // Se cambia la direccion de la barra hacia abajo/derecha.
+            iDireccionPelota = 4;
+        }
+        
+        // Se revisa si la barra y el proyectil chocan.
+        if(barBarra.colisiona(proPelota)) {
+            // Si la pelota rebota del lado izquierdo de la barra.
+            if(proPelota.getX() + proPelota.getAncho() / 2 < barBarra.getX() +
+                    barBarra.getAncho() / 2) {
+                // La pelota se comienza a mover hacia arriba/izquierda.
+                iDireccionPelota = 2;
+            }
+            // Si la pelota rebota del lado izquierdo de la barra.
+            else {
+                // La pelota se comienza a mover hacia arriba/derecha.
+                iDireccionPelota = 1;
+            }
         }
     }
     
@@ -441,24 +563,27 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
      * 
      */
     public void paint1(Graphics g) {
-        // Si sigue el juego
+        // Si sigue el juego.
         if(true) {
-            // Si la imagen ya se cargo
-            if (barBarra != null) {
+            // Si la imagen ya se cargo.
+            if (barBarra != null && proPelota != null) {
                 
                 // Se dibuja la imagen de la barra en la posicion actualizada.
                 g.drawImage(barBarra.getAnimacion().getImagen(),
                         barBarra.getX(), barBarra.getY(), this);
-
+                
+                // Se dibuja la imagen de la pelota en la posicion actualizada.
+                g.drawImage(proPelota.getAnimacion().getImagen(),
+                        proPelota.getX(), proPelota.getY(), this);
             }
 
-            // Si no se ha cargado se dibuja un mensaje 
+            // Si no se ha cargado se dibuja un mensaje.
             else {
-                    // Se a un mensaje mientras se carga el dibujo	
+                    // Se a un mensaje mientras se carga el dibujo.	
                     g.drawString("No se cargo la imagen..", 20, 20);
             }
             
-            // Se dibuja mensaje si esta pausado
+            // Se dibuja mensaje si esta pausado.
             if(bPausado) {
                 g.drawString("Pausado", getWidth() - 80, 50);
             }
