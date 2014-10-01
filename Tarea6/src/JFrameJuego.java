@@ -24,12 +24,20 @@ import javax.swing.JOptionPane;
 
 public class JFrameJuego extends JFrame implements Runnable, KeyListener {
     
-    private Personaje perBarra;  // Barra de juego que golpeara proyectil
-    private boolean bPausado;  // Variable que indica si el juego esta pausado
+    private Barra barBarra;  // Barra de juego que golpeara proyectil.
+    private boolean bPausado;  // Variable que indica si el juego esta pausado.
+    /* Variable que indica la direccion de la barra
+     * (false-izquierda, true-derecha). */
+    private boolean bDireccionBarra;
+    // Variable para controlar el movimiento de la barra.
+    private boolean bMovimientoBarra;
+    
+    // Variable de control de tiempo de la animacion.
+    private long tiempoActual;
     
     /* objetos para manejar el buffer del JFrame y este no parpadee */
-    private Image    imaImagenJFrame;   // Imagen a proyectar en Applet	
-    private Graphics graGraficaJFrame;  // Objeto grafico de la Imagen
+    private Image    imaImagenJFrame;   // Imagen a proyectar en Applet.
+    private Graphics graGraficaJFrame;  // Objeto grafico de la Imagen.
     
     /**
      * JFrameJuego
@@ -63,11 +71,33 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
      * 
      */
     public void init() {
+        // La direccion inicial de la barra es hacia la derecha.
+        bDireccionBarra = true;
+        
+        // Se inicializa el movimiento de la barra como falso.
+        bMovimientoBarra = false;
+        
+        // Se inicializa el juego como no pausado.
+        bPausado = false;
+        
         /* Se declara una variable temporal donde se va a guardar la informacion
-         * de las animaciones */
+         * de las animaciones. */
         Animacion aniAnimacionTemporal;
         
-        // Se inicializa la variable de animacion con la animacion de la barra.
+        // Se cargan las imágenes(cuadros) para la animacion de la barra.
+        Image imaBarra = Toolkit.getDefaultToolkit().
+                getImage(this.getClass().getResource("Barra Normal.png"));
+        
+        /* Se inicializa la variable de animacion con la animacion de la barra y
+         * se introducen las imagenes como parte de ella */
+        aniAnimacionTemporal = new Animacion();
+        aniAnimacionTemporal.sumaCuadro(imaBarra, 100);
+        
+        // Se inicializa objeto de barra.
+        barBarra = new Barra(0, 550, aniAnimacionTemporal);
+        
+        // Se posiciona a la barra en el centro horizontalmente.
+        barBarra.setX(getWidth() / 2 - barBarra.getAncho() / 2);
         
         /* se le añade la opcion al applet de ser escuchado por los eventos
            del teclado  */
@@ -123,10 +153,33 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
     /** 
      * actualiza
      * 
-     * Metodo que actualiza la posicion de los objetos en el <code>JFrame</code>. 
+     * Metodo que actualiza la posicion de los objetos en el
+     * <code>JFrame</code>. 
      * 
      */
     public void actualiza(){
+        /* Determina el tiempo que ha transcurrido desde que el Applet inicio
+         * su ejecucion. */
+        long tiempoTranscurrido = System.currentTimeMillis() - tiempoActual;
+
+        // Guarda el tiempo actual.
+        tiempoActual += tiempoTranscurrido;
+
+        // Actualiza las animaciones en base al tiempo transcurrido.
+        barBarra.getAnimacion().actualiza(tiempoTranscurrido);
+        
+        // Se revisa si la barra se puede mover.
+        if(bMovimientoBarra) {
+            // Se revisa la direccion de la barra.
+            // Si va a la derecha.
+            if(bDireccionBarra) {
+                barBarra.derecha();  // La barra se mueve a la derecha.
+            }
+            // Si va a la izquierda.
+            else {
+                barBarra.izquierda();  // La barra se mueve a la izquierda.
+            }
+        }
     }
 	
     /**
@@ -137,6 +190,29 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
      * 
      */
     public void checaColision(){
+        // Se revisa si la barra esta chocando con los bordes del JFrame.
+        /* Si esta chocando con el borde izquierdo y su direccion es hacia la
+         * izquierda. */
+        if(barBarra.colisiona(0, barBarra.getY()) && !bDireccionBarra) {
+            barBarra.derecha();  // Se mueve la barra un poco hacia la derecha.
+            
+            // La barra se deja de mover para no salirse del JFrame.
+            barBarra.setVelocidad(0);
+        }
+        /* Si esta chocando con el borde derecho y su direccion es hacia la
+         * derecha. */
+        else if(barBarra.colisiona(getWidth(), barBarra.getY()) &&
+                bDireccionBarra) {
+            // Se mueve la barra un poco hacia la izquierda.
+            barBarra.izquierda();
+            
+            // La barra se deja de mover para no salirse del JFrame.
+            barBarra.setVelocidad(0);
+        }
+        // Si no esta chocando.
+        else {
+            barBarra.setVelocidad(3);  // Nena se mueve con velocidad 3.
+        }
     }
     
     /**
@@ -150,7 +226,16 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
      * 
      */
     public void keyPressed(KeyEvent keyEvent) {
-        // No hay codigo pero se debe escribir el metodo
+        // Si se presiono la tecla de flecha a la izquierda.
+        if(keyEvent.getKeyCode() == KeyEvent.VK_LEFT) {
+            bMovimientoBarra = true;  // La barra se puede mover.
+            bDireccionBarra = false;  // La direccion de la barra es izquierda.
+        }
+        // Si se presiono la tecla de flecha a la derecha.
+        else if(keyEvent.getKeyCode() == KeyEvent.VK_RIGHT) {
+            bMovimientoBarra = true;  // La barra se puede mover.
+            bDireccionBarra = true;  // La direccion de la barra es derecha.
+        }
     }
     
     /**
@@ -178,8 +263,16 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
      * 
      */
     public void keyReleased(KeyEvent keyEvent) {
+        // Si se deja de presionar la tecla de flecha a la izquierda.
+        if(keyEvent.getKeyCode() == KeyEvent.VK_LEFT) {
+            bMovimientoBarra = false;  // La barra ya no se puede mover.
+        }
+        // Si se deja de presionar la tecla de flecha a la derecha.
+        else if(keyEvent.getKeyCode() == KeyEvent.VK_RIGHT) {
+            bMovimientoBarra = false;  // La barra no se puede mover.
+        }
         // Si se presiono la tecla 'P'
-        /*else*/ if(keyEvent.getKeyCode() == KeyEvent.VK_P) {
+        else if(keyEvent.getKeyCode() == KeyEvent.VK_P) {
             bPausado = ! bPausado;  // se cambia el estado de pausa
         }
     }
@@ -348,37 +441,14 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
      * 
      */
     public void paint1(Graphics g) {
-        /*// Si sigue el juego
-        if(iVidas > 0) {
+        // Si sigue el juego
+        if(true) {
             // Si la imagen ya se cargo
-            if (perNena != null && lnkListaCaminadores != null
-                    && lnkListaCorredores != null) {
-                // Se itera en la coleccion de Caminadores.    
-                for(Object objCaminador:lnkListaCaminadores) {
-                    /* Se guarda el objeto Caminador que está en el punto actual
-                     * de la colección en una variable temporal. /
-                    Personaje perCaminador = (Personaje) objCaminador;
-                    /* Dibuja la imagen de cada Caminador en la posicion
-                     * actualizada. *
-                    g.drawImage(perCaminador.getImagen(), perCaminador.getX(),
-                            perCaminador.getY(), this);
-                }
-
-                // Se itera en la coleccion de Corredores.    
-                for(Object objCorredor:lnkListaCorredores) {
-                    /* Se guarda el objeto Corredor que está en el punto actual
-                     * de la colección en una variable temporal. *
-                    Personaje perCorredor = (Personaje) objCorredor;
-                    /* Dibuja la imagen de cada Corredor en la posicion
-                     * actualizada. *
-                    g.drawImage(perCorredor.getImagen(), perCorredor.getX(),
-                            perCorredor.getY(), this);
-                }
-
-
-                // Se dibuja la imagen de Nena en la posicion actualizada
-                g.drawImage(perNena.getImagen(), perNena.getX(),
-                        perNena.getY(), this);
+            if (barBarra != null) {
+                
+                // Se dibuja la imagen de la barra en la posicion actualizada.
+                g.drawImage(barBarra.getAnimacion().getImagen(),
+                        barBarra.getX(), barBarra.getY(), this);
 
             }
 
@@ -387,32 +457,12 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
                     // Se a un mensaje mientras se carga el dibujo	
                     g.drawString("No se cargo la imagen..", 20, 20);
             }
-
-            // Se especifica font para el score y la vida
-            g.setFont(new Font("Arial", Font.BOLD, 16));
-            g.setColor(Color.RED);
-
-            // Se dibuja el score y la vida
-            g.drawString("Vidas: " + Integer.toString(iVidas), 10, 50);
-            g.drawString("Score: " + Integer.toString(iScore), 10, 70);
             
             // Se dibuja mensaje si esta pausado
             if(bPausado) {
                 g.drawString("Pausado", getWidth() - 80, 50);
             }
         }
-        
-        // Si ya se perdio el juego 
-        else {
-            // Se crea imagen para Game Over
-            URL urlGameOver = this.getClass().getResource("Game Over.jpg");
-            Image imaGameOver =
-                    Toolkit.getDefaultToolkit().getImage(urlGameOver);
-
-            // Aparece un mensaje de game over
-            g.drawImage(imaGameOver,
-                    getWidth() / 2 - 118, getHeight() / 2 - 138, this);
-        }*/
     }
     
 }
