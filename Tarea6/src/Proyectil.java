@@ -1,17 +1,16 @@
 
 /**
- * Personaje
+ * Proyectil
  *
  * Modela la definición de todos los objetos de tipo
- * <code>Personaje</code>
+ * <code>Proyectil</code>
  *
  * @author Humberto Makoto Morimoto Burgos     A01280458
  * @author Eduardo Andrade Martínez     A01035059
- * @version 1.00 2014/09/17
+ * @version 1.00 2014/10/01
  * 
  */
-import javax.swing.ImageIcon;
-import java.awt.Image;
+
 import java.awt.Rectangle;
 
 public class Proyectil {
@@ -29,7 +28,7 @@ public class Proyectil {
      * 
      * @param iX es la <code>posicion en x</code> del objeto.
      * @param iY es la <code>posicion en y</code> del objeto.
-     * @param imaImagen es la <code>imagen</code> del objeto.
+     * @param aniAnimacion es la <code>animacion</code> del objeto.
      * 
      */
     public Proyectil(int iX, int iY, Animacion aniAnimacion) {
