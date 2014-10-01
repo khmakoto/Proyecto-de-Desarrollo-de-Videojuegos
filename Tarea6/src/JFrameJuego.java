@@ -95,7 +95,7 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         
         // Se cargan las imágenes(cuadros) para la animacion de la barra.
         Image imaBarra = Toolkit.getDefaultToolkit().
-                getImage(this.getClass().getResource("Barra Normal.png"));
+                getImage(this.getClass().getResource("Barras/Barra Normal.png"));
         
         /* Se inicializa la variable de animacion con la animacion de la barra y
          * se introducen las imagenes como parte de ella */
@@ -132,584 +132,626 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             for(int iCont2 = 0; iCont2 < 8; iCont2 ++) {
                 // Se genera aleatoriamente color y tipo de bloque.
                 int iColor = (int) (Math.random() * 7);
-                int iTipo = (int) (Math.random() * 5);
+                int iTipo = (int) (Math.random() * 8);
                 
                 // Se reinicializa la animacion temporal.
                 aniAnimacionTemporal = new Animacion();
+                
+                /* Se inicializan variables para indicar si el bloque tiene
+                 * poder y/o daño. */
+                int iPoder = 0;
+                int iDano = 0;
                 
                 // Se revisa color generado.
                 switch(iColor) {
                     case 0: {
                         // Se revisa tipo.
-                        switch(iTipo) {
-                            case 0: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque1 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Amarillo 1.png"));
-                                Image imaBloque2 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Amarillo 2.png"));
-                                Image imaBloque3 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Amarillo 3.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque1,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque2,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque3,
-                                        300);
-                                break;
-                            }
-                            case 1: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Amarillo dañado 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 2: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Amarillo dañado 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 3: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Amarillo poderoso 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 4: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Amarillo poderoso 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
+                        if(iTipo == 0 || iTipo == 5) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque1 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Amarillo 1.png"));
+                            Image imaBloque2 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Amarillo 2.png"));
+                            Image imaBloque3 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Amarillo 3.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque1,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque2,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque3,
+                                    300);
+                        }
+                        else if(iTipo == 1 || iTipo == 6) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Amarillo dañado 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece el daño en 1.
+                            iDano = 1;
+                        }
+                        else if(iTipo == 2 || iTipo == 7) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Amarillo dañado 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece el daño en 2.
+                            iDano = 2;
+                        }
+                        else if(iTipo == 3) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Amarillo poderoso 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece el poder en 1.
+                            iPoder = 1;
+                        }
+                        else if(iTipo == 4) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Amarillo poderoso 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece el poder en 2.
+                            iPoder = 2;
                         }
                         break;
                     }
                     case 1: {
                         // Se revisa tipo.
-                        switch(iTipo) {
-                            case 0: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque1 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Azul 1.png"));
-                                Image imaBloque2 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Azul 2.png"));
-                                Image imaBloque3 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Azul 3.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque1,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque2,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque3,
-                                        300);
-                                break;
-                            }
-                            case 1: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Azul dañado 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 2: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Azul dañado 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 3: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Azul poderoso 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 4: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Azul poderoso 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
+                        if(iTipo == 0 || iTipo == 5) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque1 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Azul 1.png"));
+                            Image imaBloque2 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Azul 2.png"));
+                            Image imaBloque3 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Azul 3.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque1,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque2,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque3,
+                                    300);
+                        }
+                        else if(iTipo == 1 || iTipo == 6) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Azul dañado 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece daño en 1.
+                            iDano = 1;
+                        }
+                        else if(iTipo == 2 || iTipo == 7) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Azul dañado 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece daño en 2.
+                            iDano = 2;
+                        }
+                        else if(iTipo == 3) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Azul poderoso 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 1.
+                            iPoder = 1;
+                        }
+                        else if(iTipo == 4) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Azul poderoso 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 2.
+                            iPoder = 2;
                         }
                         break;
                     }
                     case 2: {
                         // Se revisa tipo.
-                        switch(iTipo) {
-                            case 0: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque1 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Morado 1.png"));
-                                Image imaBloque2 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Morado 2.png"));
-                                Image imaBloque3 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Morado 3.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque1,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque2,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque3,
-                                        300);
-                                break;
-                            }
-                            case 1: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Morado dañado 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 2: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Morado dañado 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 3: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Morado poderoso 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 4: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Morado poderoso 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
+                        if(iTipo == 0 || iTipo == 5) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque1 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Morado 1.png"));
+                            Image imaBloque2 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Morado 2.png"));
+                            Image imaBloque3 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Morado 3.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque1,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque2,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque3,
+                                    300);
+                        }
+                        else if(iTipo == 1 || iTipo == 6) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Morado dañado 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece daño en 1.
+                            iDano = 1;
+                        }
+                        else if(iTipo == 2 || iTipo == 7) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Morado dañado 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece daño en 2.
+                            iDano = 2;
+                        }
+                        else if(iTipo == 3) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Morado poderoso 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 1.
+                            iPoder = 1;
+                        }
+                        else if(iTipo == 4) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Morado poderoso 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 2.
+                            iPoder = 2;
                         }
                         break;
                     }
                     case 3: {
                         // Se revisa tipo.
-                        switch(iTipo) {
-                            case 0: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque1 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Naranja 1.png"));
-                                Image imaBloque2 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Naranja 2.png"));
-                                Image imaBloque3 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Naranja 3.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque1,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque2,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque3,
-                                        300);
-                                break;
-                            }
-                            case 1: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Naranja dañado 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 2: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Naranja dañado 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 3: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Naranja poderoso 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 4: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Naranja poderoso 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
+                        if(iTipo == 0 || iTipo == 5) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque1 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Naranja 1.png"));
+                            Image imaBloque2 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Naranja 2.png"));
+                            Image imaBloque3 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Naranja 3.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque1,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque2,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque3,
+                                    300);
+                        }
+                        else if(iTipo == 1 || iTipo == 6) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Naranja dañado 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece dano en 1.
+                            iDano = 1;
+                        }
+                        else if(iTipo == 2 || iTipo == 7) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Naranja dañado 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece dano en 2.
+                            iDano = 2;
+                        }
+                        else if(iTipo == 3) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Naranja poderoso 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 1.
+                            iPoder = 1;
+                        }
+                        else if(iTipo == 4) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Naranja poderoso 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 2.
+                            iPoder = 2;
                         }
                         break;
                     }
                     case 4: {
                         // Se revisa tipo.
-                        switch(iTipo) {
-                            case 0: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque1 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rojo 1.png"));
-                                Image imaBloque2 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rojo 2.png"));
-                                Image imaBloque3 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rojo 3.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque1,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque2,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque3,
-                                        300);
-                                break;
-                            }
-                            case 1: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rojo dañado 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 2: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rojo dañado 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 3: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rojo poderoso 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 4: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rojo poderoso 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
+                        if(iTipo == 0 || iTipo == 5) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque1 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rojo 1.png"));
+                            Image imaBloque2 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rojo 2.png"));
+                            Image imaBloque3 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rojo 3.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque1,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque2,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque3,
+                                    300);
+                        }
+                        else if(iTipo == 1 || iTipo == 6) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rojo dañado 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece dano en 1.
+                            iDano = 1;
+                        }
+                        else if(iTipo == 2 || iTipo == 7) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rojo dañado 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece daño en 2.
+                            iDano = 2;
+                        }
+                        else if(iTipo == 3) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rojo poderoso 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 1.
+                            iPoder = 1;
+                        }
+                        else if(iTipo == 4) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rojo poderoso 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 2.
+                            iPoder = 2;
                         }
                         break;
                     }
                     case 5: {
                         // Se revisa tipo.
-                        switch(iTipo) {
-                            case 0: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque1 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rosa 1.png"));
-                                Image imaBloque2 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rosa 2.png"));
-                                Image imaBloque3 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rosa 3.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque1,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque2,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque3,
-                                        300);
-                                break;
-                            }
-                            case 1: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rosa dañado 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 2: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rosa dañado 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 3: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rosa poderoso 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 4: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Rosa poderoso 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
+                        if(iTipo == 0 || iTipo == 5) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque1 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rosa 1.png"));
+                            Image imaBloque2 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rosa 2.png"));
+                            Image imaBloque3 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rosa 3.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque1,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque2,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque3,
+                                    300);
+                        }
+                        else if(iTipo == 1 || iTipo == 6) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rosa dañado 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece daño en 1.
+                            iDano = 1;
+                        }
+                        else if(iTipo == 2 || iTipo == 7) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rosa dañado 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece daño en 2.
+                            iDano = 2;
+                        }
+                        else if(iTipo == 3) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rosa poderoso 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 1.
+                            iPoder = 1;
+                        }
+                        else if(iTipo == 4) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Rosa poderoso 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 2.
+                            iPoder = 2;
                         }
                         break;
                     }
                     case 6: {
                         // Se revisa tipo.
-                        switch(iTipo) {
-                            case 0: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque1 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Verde 1.png"));
-                                Image imaBloque2 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Verde 2.png"));
-                                Image imaBloque3 = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Verde 3.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque1,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque2,
-                                        200);
-                                aniAnimacionTemporal.sumaCuadro(imaBloque3,
-                                        300);
-                                break;
-                            }
-                            case 1: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Verde dañado 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 2: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Verde dañado 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 3: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Verde poderoso 1.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
-                            case 4: {
-                                /* Se cargan las imágenes(cuadros) para la
-                                 * animacion del bloque. */
-                                Image imaBloque = Toolkit.getDefaultToolkit().
-                                    getImage(this.getClass().
-                                        getResource("Bloques/Verde poderoso 2.png"));
-                                
-                                /* Se introducen las imagenes a la variable
-                                 * animacion temporal. */
-                                aniAnimacionTemporal.sumaCuadro(imaBloque,
-                                        200);
-                                break;
-                            }
+                        if(iTipo == 0 || iTipo == 5) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque1 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Verde 1.png"));
+                            Image imaBloque2 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Verde 2.png"));
+                            Image imaBloque3 = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Verde 3.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque1,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque2,
+                                    200);
+                            aniAnimacionTemporal.sumaCuadro(imaBloque3,
+                                    300);
                         }
+                        else if(iTipo == 1 || iTipo == 6) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Verde dañado 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece daño en 1.
+                            iDano = 1;
+                        }
+                        else if(iTipo == 2 || iTipo == 7) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Verde dañado 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece daño en 2.
+                            iDano = 2;
+                        }
+                        else if(iTipo == 3) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Verde poderoso 1.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 1.
+                            iPoder = 1;
+                        }
+                        else if(iTipo == 4) {
+                            /* Se cargan las imágenes(cuadros) para la
+                             * animacion del bloque. */
+                            Image imaBloque = Toolkit.getDefaultToolkit().
+                                getImage(this.getClass().
+                                    getResource("Bloques/Verde poderoso 2.png"));
+
+                            /* Se introducen las imagenes a la variable
+                             * animacion temporal. */
+                            aniAnimacionTemporal.sumaCuadro(imaBloque,
+                                    200);
+                            
+                            // Se establece poder en 2.
+                            iPoder = 2;
+                        }
+                        break;
                     }
                 }
                 
                 // Se genera un bloque en la posicion correcta.
                 Bloques bloBloque = new Bloques(iCont2 * 64, 50 + iCont * 40,
-                        aniAnimacionTemporal);
+                        aniAnimacionTemporal, iDano, iPoder, iColor);
+                System.out.println(iTipo);
 
                 // Se agrega el Bloque a la coleccion de Bloques.
                 lnkBloques.add(bloBloque);
@@ -939,6 +981,90 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
                 iDireccionPelota = 1;
             }
         }
+        
+        // Se crea un objeto tipo Bloque para guardar bloques si chocan.
+        Bloques bloBloqueTemporal = null;
+        
+        // Se revisa colision entre proyectil y bloques.
+        // Se itera en la lista de Bloques.
+        for(Object objBloque:lnkBloques) {
+            /* Se guarda el objeto Bloque que esta en el punto actual
+             * de la colección en una variable temporal. */
+            Bloques bloBloque = (Bloques) objBloque;
+            
+            // Se inicializa una variable para tener en cuenta el daño.
+            boolean bDestruido = false;
+            
+            // Se revisa colision entre proyectil y bloque actual.
+            if(bloBloque.colisiona(proPelota)) {
+                // Si la pelota iba arriba/derecha.
+                if(iDireccionPelota == 1) {
+                    // Si la pelota pego por el borde izquierdo.
+                    if(proPelota.colisiona(bloBloque.getX(), proPelota.getY())) {
+                        // La pelota cambia su direccion a arriba/izquierda.
+                        iDireccionPelota = 2;
+                    }
+                    // Si la pelota pego por el borde inferior.
+                    if(proPelota.colisiona(proPelota.getX(), 
+                            bloBloque.getY() + bloBloque.getAlto())) {
+                        // La pelota cambia su direccion a abajo/derecha.
+                        iDireccionPelota = 4;
+                    }
+                }
+                // Si la pelota iba arriba/izquierda.
+                else if(iDireccionPelota == 2) {
+                    // Si la pelota pego por el borde derecho.
+                    if(proPelota.colisiona(bloBloque.getX() +
+                            bloBloque.getAncho(), proPelota.getY())) {
+                        // La pelota cambia su direccion a arriba/derecha.
+                        iDireccionPelota = 1;
+                    }
+                    // Si la pelota pego por el borde inferior.
+                    if(proPelota.colisiona(proPelota.getX(), 
+                            bloBloque.getY() + bloBloque.getAlto())) {
+                        // La pelota cambia su direccion a abajo/izquierda.
+                        iDireccionPelota = 3;
+                    }
+                }
+                // Si la pelota iba abajo/izquierda.
+                else if(iDireccionPelota == 3) {
+                    // Si la pelota pego por el borde derecho.
+                    if(proPelota.colisiona(bloBloque.getX() +
+                            bloBloque.getAncho(), proPelota.getY())) {
+                        // La pelota cambia su direccion a abajo/derecha.
+                        iDireccionPelota = 4;
+                    }
+                    // Si la pelota pego por el borde superior.
+                    if(proPelota.colisiona(proPelota.getX(), 
+                            bloBloque.getY())) {
+                        // La pelota cambia su direccion a arriba/izquierda.
+                        iDireccionPelota = 2;
+                    }
+                }
+                // Si la pelota iba abajo/derecha.
+                else if(iDireccionPelota == 4) {
+                    // Si la pelota pego por el borde izquierdo.
+                    if(proPelota.colisiona(bloBloque.getX(), proPelota.getY())) {
+                        // La pelota cambia su direccion a abajo/izquierda.
+                        iDireccionPelota = 3;
+                    }
+                    // Si la pelota pego por el borde superior.
+                    if(proPelota.colisiona(proPelota.getX(), 
+                            bloBloque.getY())) {
+                        // La pelota cambia su direccion a arriba/derecha.
+                        iDireccionPelota = 1;
+                    }
+                }
+                
+                // Si ya se debe destruir el bloque.
+                if(bloBloque.getDano() > 2) {
+                    bloBloqueTemporal = (Bloques) objBloque;
+                }
+            }
+        }
+        
+        // Si se tuvo que borrar algún bloque.
+        lnkBloques.remove(bloBloqueTemporal);
     }
     
     /**
@@ -1141,7 +1267,7 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         }
 
         // Se crea imagen para el background
-        URL urlImagenBackground = this.getClass().getResource("espacio.jpg");
+        URL urlImagenBackground = this.getClass().getResource("Background.jpg");
         Image imaImagenBackground =
                 Toolkit.getDefaultToolkit().getImage(urlImagenBackground);
 
