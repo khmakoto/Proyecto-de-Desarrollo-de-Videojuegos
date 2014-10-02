@@ -27,7 +27,9 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
     private Barra barBarra;  // Barra de juego que golpeara el proyectil.
     private Proyectil proPelota;  // Pelota que se movera por la ventana.
     private LinkedList lnkBloques;  // Coleccion de Bloques.
+    private LinkedList lnkPoderes;  // Coleccion de Poderes.
     private boolean bPausado;  // Variable que indica si el juego esta pausado.
+    private int iVidas;  // Vidas del jugador
     /* Variable que indica la direccion de la barra
      * (false-izquierda, true-derecha). */
     private boolean bDireccionBarra;
@@ -37,6 +39,10 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
     private int iDireccionPelota;
     // Variable para controlar el movimiento de la barra.
     private boolean bMovimientoBarra;
+    // Variable para indicar que apenas se lanzara pelota.
+    private boolean bApenasIniciado;
+    // Variable para indicar que no se ha iniciado el juego.
+    private boolean bNoIniciado;
     
     // Variable de control de tiempo de la animacion.
     private long tiempoActual;
@@ -77,6 +83,15 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
      * 
      */
     public void init() {
+        // No se ha iniciado el juego.
+        bNoIniciado = true;
+        
+        // Se inicializa el juego con 5 vidas.
+        iVidas = 5;
+        
+        // Se indica que apenas inicio el juego.
+        bApenasIniciado = true;
+        
         // La direccion inicial de la pelota es hacia arriba/derecha.
         iDireccionPelota = 1;
         
@@ -106,7 +121,7 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         barBarra = new Barra(0, 450, aniAnimacionTemporal);
         
         // Se posiciona a la barra en el centro horizontalmente.
-        barBarra.setX(getWidth() / 2 - barBarra.getAncho() / 2);
+        barBarra.setX(getWidth() / 2 - 50);
         
          // Se cargan las imágenes(cuadros) para la animacion de la pelota.
         Image imaPelota = Toolkit.getDefaultToolkit().
@@ -118,14 +133,17 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         aniAnimacionTemporal.sumaCuadro(imaPelota, 100);
         
         // Se inicializa objeto de pelota encima de barra.
-        proPelota = new Proyectil(0, 449 - barBarra.getAlto(),
+        proPelota = new Proyectil(0, 430,
                 aniAnimacionTemporal);
          
         // Se posiciona a la pelota en el centro horizontalmente.
-        proPelota.setX(getWidth() / 2 - proPelota.getAncho() / 2);
+        proPelota.setX(getWidth() / 2 - 22);
         
         // Se define lista de Bloques.
         lnkBloques = new LinkedList();
+        
+        // Se define lista de Poderes.
+        lnkPoderes = new LinkedList();
         
         // Se crearan 48 bloques de tipo y color aleatorio cada uno.
         for(int iCont = 0; iCont < 6; iCont ++) {
@@ -751,7 +769,6 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
                 // Se genera un bloque en la posicion correcta.
                 Bloques bloBloque = new Bloques(iCont2 * 64, 50 + iCont * 40,
                         aniAnimacionTemporal, iDano, iPoder, iColor);
-                System.out.println(iTipo);
 
                 // Se agrega el Bloque a la coleccion de Bloques.
                 lnkBloques.add(bloBloque);
@@ -792,7 +809,7 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             /* mientras no este pausado el juego, se actualizan posiciones
              * de jugadores se checa si hubo colisiones para desaparecer
              * jugadores o corregir movimientos */
-            if(! bPausado) {
+            if(!bPausado && !lnkBloques.isEmpty() && iVidas > 0 && !bNoIniciado) {
                 actualiza();
                 checaColision();
             }
@@ -829,13 +846,26 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         proPelota.getAnimacion().actualiza(tiempoTranscurrido);  // En Pelota.
         
         // En Bloques.  
-        for(Object objBloque:lnkBloques) {
+        for(int iI = 0; iI < lnkBloques.size(); iI ++) {
             /* Se guarda el objeto Bloque que esta en el punto actual
              * de la colección en una variable temporal. */
-            Bloques bloBloque = (Bloques) objBloque;
+            Bloques bloBloque = (Bloques) lnkBloques.get(iI);
             
             // Actualiza la animacion de bloque actual.
             bloBloque.getAnimacion().actualiza(tiempoTranscurrido);
+        }
+        
+        // En Poderes se actualiza animacion y posicion.
+        for(Object objPoder:lnkPoderes) {
+            /* Se guarda el objeto Poder que esta en el punto actual
+             * de la colección en una variable temporal. */
+            Poder podPoder = (Poder) objPoder;
+            
+            // Actualiza la animacion de bloque actual.
+            podPoder.getAnimacion().actualiza(tiempoTranscurrido);
+            
+            // Se actualiza posicion.
+            podPoder.abajo();
         }
 
         // Se revisa si la barra se puede mover.
@@ -844,38 +874,49 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             // Si va a la derecha.
             if(bDireccionBarra) {
                 barBarra.derecha();  // La barra se mueve a la derecha.
+                // Si apenas se inicio el juego.
+                if(bApenasIniciado) {
+                    proPelota.derecha();  // También se mueve la pelota.
+                }
             }
             // Si va a la izquierda.
             else {
                 barBarra.izquierda();  // La barra se mueve a la izquierda.
+                // Si apenas se inicio el juego.
+                if(bApenasIniciado) {
+                    proPelota.izquierda();  // También se mueve la pelota.
+                }
             }
         }
         
-        // Se revisa la direccion de la pelota.
-        switch(iDireccionPelota) {
-            // Si la direccion es arriba/derecha.
-            case 1: {
-                proPelota.arriba();  // La pelota se mueve arriba.
-                proPelota.derecha();  // La pelota se mueve a la derecha.
-                break;
-            }
-            // Si la direccion es arriba/izquierda.
-            case 2: {
-                proPelota.arriba();  // La pelota se mueve arriba.
-                proPelota.izquierda();  // La pelota se mueve a la izquierda.
-                break;
-            }
-            // Si la direccion es abajo/izquierda.
-            case 3: {
-                proPelota.abajo();  // La pelota se mueve abajo.
-                proPelota.izquierda();  // La pelota se mueve a la izquierda.
-                break;
-            }
-            // Si la direccion es abajo/derecha.
-            case 4: {
-                proPelota.abajo();  // La pelota se mueve abajo.
-                proPelota.derecha();  // La pelota se mueve a la derecha.
-                break;
+        // Si ya se empezo el juego.
+        if(!bApenasIniciado) {
+            // Se revisa la direccion de la pelota.
+            switch(iDireccionPelota) {
+                // Si la direccion es arriba/derecha.
+                case 1: {
+                    proPelota.arriba();  // La pelota se mueve arriba.
+                    proPelota.derecha();  // La pelota se mueve a la derecha.
+                    break;
+                }
+                // Si la direccion es arriba/izquierda.
+                case 2: {
+                    proPelota.arriba();  // La pelota se mueve arriba.
+                    proPelota.izquierda();  // La pelota se mueve a la izquierda.
+                    break;
+                }
+                // Si la direccion es abajo/izquierda.
+                case 3: {
+                    proPelota.abajo();  // La pelota se mueve abajo.
+                    proPelota.izquierda();  // La pelota se mueve a la izquierda.
+                    break;
+                }
+                // Si la direccion es abajo/derecha.
+                case 4: {
+                    proPelota.abajo();  // La pelota se mueve abajo.
+                    proPelota.derecha();  // La pelota se mueve a la derecha.
+                    break;
+                }
             }
         }
     }
@@ -896,6 +937,15 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             
             // La barra se deja de mover para no salirse del JFrame.
             barBarra.setVelocidad(0);
+            
+            // Si la pelota se esta moviendo con la barra.
+            if(bApenasIniciado) {
+                // Se mueve la pelota un poco hacia la derecha.
+                proPelota.derecha();
+            
+                // La pelota se deja de mover para no salirse del JFrame.
+                proPelota.setVelocidad(0);
+            }
         }
         /* Si esta chocando con el borde derecho y su direccion es hacia la
          * derecha. */
@@ -906,15 +956,36 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             
             // La barra se deja de mover para no salirse del JFrame.
             barBarra.setVelocidad(0);
+            
+            // Si la pelota se esta moviendo con la barra.
+            if(bApenasIniciado) {
+                // Se mueve la pelota un poco hacia la izquierda.
+                proPelota.izquierda();
+            
+                // La pelota se deja de mover para no salirse del JFrame.
+                proPelota.setVelocidad(0);
+            }
         }
         // Si no esta chocando.
         else {
-            barBarra.setVelocidad(3);  // Nena se mueve con velocidad 3.
+            barBarra.setVelocidad(5);  // La barra se mueve con velocidad 5.
+            
+            // Si la pelota se esta moviendo con la barra.
+            if(bApenasIniciado) {
+                // La barra se mueve con velocidad 4.
+                barBarra.setVelocidad(4);
+                
+                // La pelota se mueve con velocidad 4.
+                proPelota.setVelocidad(4);
+            }
         }
         
         // Se revisa si la pelota esta chocando con los bordes del JFrame.
         // Si esta chocando con el borde inferior.
         if(proPelota.colisiona(proPelota.getX(), getHeight())) {
+            // Se resta una vida.
+            iVidas --;
+            
             // Se reinician posiciones de barra y pelota.
             barBarra.setX(getWidth() / 2 - barBarra.getAncho() / 2);
             barBarra.setY(450);
@@ -923,6 +994,41 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             
             // Se reinicia direccion de pelota hacia arriba/derecha.
             iDireccionPelota = 1;
+            
+            // Se pone que el juego acaba de iniciar de nuevo (barra y pelota).
+            bApenasIniciado = true;
+            
+            /* Se cargan las imágenes(cuadros) para la
+             * animacion del bloque. */
+            Image imaBarra = Toolkit.getDefaultToolkit().
+                getImage(this.getClass().
+                    getResource("Barras/Barra Normal.png"));
+
+            // Se inicializa una variable animacion temporal.
+            Animacion aniAnimacion = new Animacion();
+
+            // Se introducen las imagenes a la animacion del bloque.
+            aniAnimacion.sumaCuadro(imaBarra, 200);
+            
+            // Se cambia animacion de barra.
+            barBarra.setAnimacion(aniAnimacion);
+            
+            // Se reinicializa velocidad de pelota.
+            proPelota.setVelocidad(4);
+            
+            // Se eliminan poderes cayendo
+            // Se itera en la lista de Poderes.
+            for(int iI=0; iI < lnkPoderes.size(); iI ++) {
+                /* Se guarda el objeto Poder que esta en el punto actual
+                 * de la colección en una variable temporal. */
+                Poder podPoder = (Poder) lnkPoderes.get(iI);
+
+                // Se borra el poder.
+                lnkPoderes.remove(podPoder);
+                
+                // Se reinicializa el contador en la lista.
+                iI = 0;
+            }
         }
         /* Si esta chocando con el borde derecho y su direccion es
          * arriba/derecha. */
@@ -982,18 +1088,12 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             }
         }
         
-        // Se crea un objeto tipo Bloque para guardar bloques si chocan.
-        Bloques bloBloqueTemporal = null;
-        
         // Se revisa colision entre proyectil y bloques.
         // Se itera en la lista de Bloques.
-        for(Object objBloque:lnkBloques) {
+        for(int iI=0; iI < lnkBloques.size(); iI ++) {
             /* Se guarda el objeto Bloque que esta en el punto actual
              * de la colección en una variable temporal. */
-            Bloques bloBloque = (Bloques) objBloque;
-            
-            // Se inicializa una variable para tener en cuenta el daño.
-            boolean bDestruido = false;
+            Bloques bloBloque = (Bloques) lnkBloques.get(iI);
             
             // Se revisa colision entre proyectil y bloque actual.
             if(bloBloque.colisiona(proPelota)) {
@@ -1056,15 +1156,134 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
                     }
                 }
                 
+                // Si el bloque contenia un poder.
+                if(bloBloque.getPoder() > 0) {
+                    // Se declaran variables tipo imagen.
+                    Image imaPoder1;
+                    Image imaPoder2;
+                    
+                    // Se declara variable indicador de si poder es bueno o no.
+                    boolean bBueno;
+                    
+                    /* Se revisa que poder fue y se agregan imagenes
+                     * correspondientes. */
+                    if(bloBloque.getPoder() == 1) {
+                        /* Se cargan las imágenes(cuadros) para la
+                         * animacion del bloque. */
+                        imaPoder1 = Toolkit.getDefaultToolkit().
+                            getImage(this.getClass().
+                                getResource("Bloques/Poder 1-1.png"));
+                        imaPoder2 = Toolkit.getDefaultToolkit().
+                            getImage(this.getClass().
+                                getResource("Bloques/Poder 1-2.png"));
+                        
+                        // Se indica que el poder es bueno.
+                        bBueno = true;
+                    }
+                    else {
+                        /* Se cargan las imágenes(cuadros) para la
+                         * animacion del bloque. */
+                        imaPoder1 = Toolkit.getDefaultToolkit().
+                            getImage(this.getClass().
+                                getResource("Bloques/Poder 2-1.png"));
+                        imaPoder2 = Toolkit.getDefaultToolkit().
+                            getImage(this.getClass().
+                                getResource("Bloques/Poder 2-2.png"));
+                        
+                        // Se indica que el poder es malo.
+                        bBueno = false;
+                    }
+                    
+                    // Se crea una variable animacion temporal.
+                    Animacion aniAnimacion = new Animacion();
+                    
+                    /* Se introducen las imagenes a la variable animacion
+                     * temporal. */
+                    aniAnimacion.sumaCuadro(imaPoder1, 200);
+                    aniAnimacion.sumaCuadro(imaPoder2, 200);
+                    
+                    // Se crea el poder.
+                    Poder podPoder = new Poder(
+                            bloBloque.getX() + bloBloque.getAncho() / 2 - 12,
+                            bloBloque.getY(), aniAnimacion, bBueno);
+                    
+                    // Se agrega poder a coleccion de Poderes.
+                    lnkPoderes.add(podPoder);
+                }
+                
                 // Si ya se debe destruir el bloque.
                 if(bloBloque.getDano() > 2) {
-                    bloBloqueTemporal = (Bloques) objBloque;
+                    // Se borra el bloque.
+                    lnkBloques.remove(bloBloque);
                 }
             }
         }
         
-        // Si se tuvo que borrar algún bloque.
-        lnkBloques.remove(bloBloqueTemporal);
+        /* Se revisa colision entre poder y borde inferior de JFrame y entre
+         * poder y barra. */
+        // Se itera en la lista de Poderes.
+        for(int iI=0; iI < lnkPoderes.size(); iI ++) {
+            /* Se guarda el objeto Poder que esta en el punto actual
+             * de la colección en una variable temporal. */
+            Poder podPoder = (Poder) lnkPoderes.get(iI);
+            
+            // Si colisiono con borde inferior.
+            if(podPoder.colisiona(podPoder.getX(), getHeight() +
+                    podPoder.getAlto())) {
+                // Se borra el poder.
+                lnkPoderes.remove(podPoder);
+            }
+            
+            // Si colisiono con barra.
+            if(podPoder.colisiona(barBarra)) {
+                // Si el poder es bueno.
+                if(podPoder.getBueno()) {
+                    // Si la barra se hace más larga.
+                    if(podPoder.getPoder() == 0) {
+                        // Se establece velocidad de pelota en 4.
+                        proPelota.setVelocidad(4);
+                    }
+                    // Si el poder reduce velocidad de pelota.
+                    else if(podPoder.getPoder() == 1) {
+                        // Se reduce velocidad de pelota.
+                        proPelota.setVelocidad(3);
+                    }
+                    // Si se aumentan vidas.
+                    else if(podPoder.getPoder() == 2) {
+                        // Se aumenta en 1 la vida.
+                        iVidas ++;
+
+                        // Se establece velocidad de pelota en 4.
+                        proPelota.setVelocidad(4);
+                    }
+                }
+                // Si el poder es malo.
+                else {
+                    // Si la barra se hace más corta.
+                    if(podPoder.getPoder() == 0) {
+                        // Se establece velocidad de pelota en 4.
+                        proPelota.setVelocidad(4);
+                    }
+                    // Si el poder aumenta velocidad de pelota.
+                    else if(podPoder.getPoder() == 1) {
+                        // Se aumenta velocidad de pelota.
+                        proPelota.setVelocidad(5);
+                    }
+                    // Si se reducen vidas.
+                    else if(podPoder.getPoder() == 2) {
+                        // Se reduce en 1 la vida.
+                        iVidas --;
+
+                        // Se establece velocidad de pelota en 4.
+                        proPelota.setVelocidad(4);
+                    }
+                }
+                
+                // Se borra el poder.
+                lnkPoderes.remove(podPoder);
+            }
+        }
+        
     }
     
     /**
@@ -1125,7 +1344,21 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         }
         // Si se presiono la tecla 'P'
         else if(keyEvent.getKeyCode() == KeyEvent.VK_P) {
-            bPausado = ! bPausado;  // se cambia el estado de pausa
+            bPausado = ! bPausado;  // se cambia el estado de pausa.
+        }
+        // Si el juego apenas inicio y se presiona la barra espaciadora.
+        else if(bNoIniciado && keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
+            bNoIniciado = !bNoIniciado;  // Se inicia el juego.
+        }
+        // Si no se ha lanzado pelota y se presiona la barra espaciadora.
+        else if(bApenasIniciado && keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
+            bApenasIniciado = false;  // Se indica que ya se comienza a jugar.
+        }
+        // Si se termino juego y se presiona barra espaciadora.
+        else if((lnkBloques.isEmpty() || iVidas == 0) && 
+                keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
+            init();  // Se mandan llamar condiciones iniciales del juego.
+            removeKeyListener(this);  // Se elimina key listener extra creado.
         }
     }
     
@@ -1293,41 +1526,93 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
      * 
      */
     public void paint1(Graphics g) {
-        // Si sigue el juego.
-        if(true) {
-            // Si la imagen ya se cargo.
-            if (barBarra != null && proPelota != null && lnkBloques != null) {
-                // Se itera en la coleccion de Bloques.    
-                for(Object objBloque:lnkBloques) {
-                    /* Se guarda el objeto Bloque que est en el punto actual
-                     * de la colección en una variable temporal. */
-                    Bloques bloBloque = (Bloques) objBloque;
-                            
-                    /* Dibuja la imagen de cada Bloque en la posicion
-                     * debida. */
-                    g.drawImage(bloBloque.getAnimacion().getImagen(),
-                            bloBloque.getX(), bloBloque.getY(), this);
-                }
+        // Si la imagen ya se cargo.
+        if (barBarra != null && proPelota != null && lnkBloques != null
+                && lnkPoderes != null) {
+            // Si no ha empezado el juego.
+            if(bNoIniciado) {
                 
-                // Se dibuja la imagen de la barra en la posicion actualizada.
-                g.drawImage(barBarra.getAnimacion().getImagen(),
-                        barBarra.getX(), barBarra.getY(), this);
-                
-                // Se dibuja la imagen de la pelota en la posicion actualizada.
-                g.drawImage(proPelota.getAnimacion().getImagen(),
-                        proPelota.getX(), proPelota.getY(), this);
             }
-
-            // Si no se ha cargado se dibuja un mensaje.
+            // Si ya empezo el juego.
             else {
-                    // Se a un mensaje mientras se carga el dibujo.	
-                    g.drawString("No se cargo la imagen..", 20, 20);
+                // Si sigue el juego.
+                if(!lnkBloques.isEmpty() && iVidas > 0) {
+                    // Se itera en la coleccion de Bloques.    
+                    for(Object objBloque:lnkBloques) {
+                        /* Se guarda el objeto Bloque que esta en el punto actual
+                         * de la colección en una variable temporal. */
+                        Bloques bloBloque = (Bloques) objBloque;
+
+                        /* Dibuja la imagen de cada Bloque en la posicion
+                         * debida. */
+                        g.drawImage(bloBloque.getAnimacion().getImagen(),
+                                bloBloque.getX(), bloBloque.getY(), this);
+                    }
+
+                    // Se itera en la coleccion de Poderes.    
+                    for(Object objPoder:lnkPoderes) {
+                        /* Se guarda el objeto Poder que esta en el punto actual
+                         * de la colección en una variable temporal. */
+                        Poder podPoder = (Poder) objPoder;
+
+                        /* Dibuja la imagen de cada Bloque en la posicion
+                         * debida. */
+                        g.drawImage(podPoder.getAnimacion().getImagen(),
+                                podPoder.getX(), podPoder.getY(), this);
+                    }
+
+                    // Se dibuja la imagen de la barra en la posicion actualizada.
+                    g.drawImage(barBarra.getAnimacion().getImagen(),
+                            barBarra.getX(), barBarra.getY(), this);
+
+                    // Se dibuja la imagen de la pelota en la posicion actualizada.
+                    g.drawImage(proPelota.getAnimacion().getImagen(),
+                            proPelota.getX(), proPelota.getY(), this);
+
+
+                    // Se dibujan las vidas.
+                    // Se especifica font para el mensaje.
+                    g.setFont(new Font("Arial", Font.BOLD, 14));
+                    g.setColor(Color.RED);
+
+                    // Aparece mensaje de vidas.
+                    g.drawString("Lives: " + Integer.toString(iVidas), 10, 45);
+
+                    // Se dibuja mensaje si esta pausado.
+                    if(bPausado) {
+                        // Se especifica font para el mensaje.
+                        g.setFont(new Font("Arial", Font.BOLD, 16));
+                        g.setColor(Color.RED);
+
+                        // Aparece mensaje de pausado.
+                        g.drawString("Paused", getWidth() - 70, 50);
+                    }
+                }
+                // Si se perdio el juego.
+                else if(iVidas == 0) {
+                    // Se obtiene imagen de Game Over.
+                    Image imaGameOver = Toolkit.getDefaultToolkit().getImage(
+                            this.getClass().getResource("Game Over.jpg"));
+
+                    // Se dibuja la imagen en el centro.
+                    g.drawImage(imaGameOver, 0, 0, this);
+                }
+                // Si se gano el juego.
+                else {
+                    // Se obtiene imagen de que se gano.
+                    Image imaWin = Toolkit.getDefaultToolkit().getImage(
+                            this.getClass().getResource("You Won.jpg"));
+
+                    // Se dibuja la imagen en el centro.
+                    g.drawImage(imaWin, 0, 0, this);
+                }
             }
-            
-            // Se dibuja mensaje si esta pausado.
-            if(bPausado) {
-                g.drawString("Pausado", getWidth() - 80, 50);
-            }
+        }
+
+        // Si no se ha cargado se dibuja un mensaje.
+        else {
+                // Se a un mensaje mientras se carga el dibujo.	
+                g.drawString("No se cargo la imagen..", 20, 20);
         }
     }
     

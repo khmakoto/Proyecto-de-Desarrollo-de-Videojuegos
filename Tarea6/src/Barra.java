@@ -35,7 +35,7 @@ public class Barra {
         this.iX = iX;
         this.iY = iY;
         this.aniAnimacion = aniAnimacion;
-        this.iVelocidad = 4;   // default 4 en velocidad
+        this.iVelocidad = 5;   // default 5 en velocidad
     }
     
     /**

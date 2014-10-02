@@ -40,6 +40,7 @@ public class Bloques {
      * @param iDano es el <code>daño</code> inicial del objeto.
      * @param iPoder es el <code>indicador</code> de si el objeto contiene un
      * poder o no.
+     * @param iColor es el <code>color</code> del bloque.
      * 
      */
     public Bloques(int iX, int iY, Animacion aniAnimacion, int iDano,
