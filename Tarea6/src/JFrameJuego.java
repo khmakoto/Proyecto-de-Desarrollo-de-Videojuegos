@@ -43,6 +43,22 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
     private boolean bApenasIniciado;
     // Variable para indicar que no se ha iniciado el juego.
     private boolean bNoIniciado;
+    // Sonido de golpe de barra y pelota.
+    private SoundClip souBallHit;
+    // Sonido de cuando se rompe un block.
+    private SoundClip souBlockBreak;
+    // Sonido de Game Over.
+    private SoundClip souGameOver;
+    // Sonido de que se perdio una vida.
+    private SoundClip souLifeDown;
+    // Musica de fondo.
+    private SoundClip souMainMenu;
+    // Sonido de que se obtuvo un poder positivo.
+    private SoundClip souPowerUp;
+    // Sonido de que se obtuvo un poder negativo.
+    private SoundClip souPowerDown;
+    // Sonido al ganar.
+    private SoundClip souWin;
     
     // Variable de control de tiempo de la animacion.
     private long tiempoActual;
@@ -775,6 +791,27 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             }
         }
         
+        // Se crea sonido de golpe de barra y pelota.
+        souBallHit = new SoundClip("Sonidos/BallHit.wav");
+        // Se crea sonido de cuando se rompe un block.
+        souBlockBreak = new SoundClip("Sonidos/BlockBreak.wav");
+        // Se crea sonido de Game Over.
+        souGameOver = new SoundClip("Sonidos/GameOver.wav");
+        // Se crea sonido de que se perdio una vida.
+        souLifeDown = new SoundClip("Sonidos/LifeDown.wav");
+        // Se crea musica de fondo.
+        souMainMenu = new SoundClip("Sonidos/MainMenu.wav");
+        // Se crea sonido de que se obtuvo un poder positivo.
+        souPowerUp = new SoundClip("Sonidos/PowerUp.wav");
+        // Se crea sonido de que se obtuvo un poder negativo.
+        souPowerDown = new SoundClip("Sonidos/PowerDown.wav");
+        // Se crea sonido al ganar.
+        souWin = new SoundClip("Sonidos/Win.wav");
+        
+        // Se inicializa el sonido del menu con un loop.
+        souMainMenu.setLooping(true);
+        souMainMenu.play();
+        
         /* Se le añade la opcion al applet de ser escuchado por los eventos
            del teclado.  */
 	addKeyListener(this);
@@ -986,6 +1023,15 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             // Se resta una vida.
             iVidas --;
             
+            // Si se llego a 0 vidas entonces suena sonido de fin de juego.
+            if(iVidas == 0) {
+                souGameOver.play();
+            }
+            // Si no entonces suena sonido de una vida menos.
+            else {
+                souLifeDown.play();
+            }
+            
             // Se reinician posiciones de barra y pelota.
             barBarra.setX(getWidth() / 2 - barBarra.getAncho() / 2);
             barBarra.setY(450);
@@ -1086,6 +1132,9 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
                 // La pelota se comienza a mover hacia arriba/derecha.
                 iDireccionPelota = 1;
             }
+            
+            // Suena sonido de choque.
+            souBallHit.play();
         }
         
         // Se revisa colision entre proyectil y bloques.
@@ -1215,6 +1264,15 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
                 if(bloBloque.getDano() > 2) {
                     // Se borra el bloque.
                     lnkBloques.remove(bloBloque);
+                    
+                    // Suena sonido de destruccion de bloque.
+                    souBlockBreak.play();
+                    
+                    // Si se acabaron todos los bloques.
+                    if(lnkBloques.isEmpty()) {
+                        // Suena sonido de que se gano el juego.
+                        souWin.play();
+                    }
                 }
             }
         }
@@ -1238,6 +1296,9 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
             if(podPoder.colisiona(barBarra)) {
                 // Si el poder es bueno.
                 if(podPoder.getBueno()) {
+                    // Suena sonido de power up.
+                    souPowerUp.play();
+                    
                     // Si la barra se hace más larga.
                     if(podPoder.getPoder() == 0) {
                         // Se establece velocidad de pelota en 4.
@@ -1259,6 +1320,9 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
                 }
                 // Si el poder es malo.
                 else {
+                    // Suena sonido de power down.
+                    souPowerDown.play();
+                    
                     // Si la barra se hace más corta.
                     if(podPoder.getPoder() == 0) {
                         // Se establece velocidad de pelota en 4.
@@ -1349,6 +1413,7 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         // Si el juego apenas inicio y se presiona la barra espaciadora.
         else if(bNoIniciado && keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
             bNoIniciado = !bNoIniciado;  // Se inicia el juego.
+            souMainMenu.stop();  // Se detiene musica de menu principal.
         }
         // Si no se ha lanzado pelota y se presiona la barra espaciadora.
         else if(bApenasIniciado && keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -1357,6 +1422,8 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
         // Si se termino juego y se presiona barra espaciadora.
         else if((lnkBloques.isEmpty() || iVidas == 0) && 
                 keyEvent.getKeyCode() == KeyEvent.VK_SPACE) {
+            souWin.stop();  // Detener sonido de haber ganado.
+            souGameOver.stop();  // Detener sonido de haber perdido.
             init();  // Se mandan llamar condiciones iniciales del juego.
             removeKeyListener(this);  // Se elimina key listener extra creado.
         }
@@ -1531,7 +1598,12 @@ public class JFrameJuego extends JFrame implements Runnable, KeyListener {
                 && lnkPoderes != null) {
             // Si no ha empezado el juego.
             if(bNoIniciado) {
-                
+                // Se obtiene imagen de inicio.
+                Image imaWin = Toolkit.getDefaultToolkit().getImage(
+                        this.getClass().getResource("Title.jpg"));
+
+                // Se dibuja la imagen en el centro.
+                g.drawImage(imaWin, 0, 0, this);
             }
             // Si ya empezo el juego.
             else {
